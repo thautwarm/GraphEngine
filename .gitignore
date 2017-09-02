@@ -65,7 +65,7 @@ GraphEngine.Lib
 *.diagsession
 *.vspx
 *.vsps
-build/*
+build/
 *.tapp
 CMakeFiles
 .vscode/
