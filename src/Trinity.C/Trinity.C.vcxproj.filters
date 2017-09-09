@@ -204,7 +204,7 @@
     <ClInclude Include="src\Network\Network.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\Trinity\Python\GraphEngine.h">
+    <ClInclude Include="include\Trinity\Python\GEKV.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -356,7 +356,7 @@
     <ClCompile Include="src\Network\Server\TrinityServer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Trinity\Python\GraphEngine.cpp">
+    <ClCompile Include="src\Trinity\Python\GEKV.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

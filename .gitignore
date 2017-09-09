@@ -91,3 +91,4 @@ tests/xunit_reports
 tests/xunit_coreclr_reports
 tests/nunit*reports
 tests/new_test.exe
+GEKV_Storage/
