@@ -92,6 +92,7 @@
     <Compile Include="GraphEngineConstants.cs" />
     <Compile Include="GraphEngineStatefulServiceRuntime.cs" />
     <Compile Include="Interfaces\IGraphEngineStatefulServiceRuntime.cs" />
+    <Compile Include="Interfaces\Persister.cs" />
     <Compile Include="Interfaces\ITrinityServerRuntimeManager.cs" />
     <Compile Include="Interfaces\NameService.cs" />
     <Compile Include="Interfaces\ReliableTaskQueue.cs" />
