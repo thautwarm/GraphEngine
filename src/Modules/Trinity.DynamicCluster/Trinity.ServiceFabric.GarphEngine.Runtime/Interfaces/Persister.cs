@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Fabric;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Trinity.DynamicCluster;
 using Trinity.DynamicCluster.Persistency;
+using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Blob;
+using Microsoft.WindowsAzure.Storage.DataMovement;
 
 namespace Trinity.ServiceFabric.GarphEngine.Infrastructure.Interfaces
 {
@@ -24,12 +28,21 @@ namespace Trinity.ServiceFabric.GarphEngine.Infrastructure.Interfaces
 
         public Func<Task> End = null;
 
+        // Configurations about cloud blob storage.
+        // TODO: Initialize the account and containerName.
+        private CloudStorageAccount m_account;
+        private string m_containerName;
+        private Func<string, CloudBlockBlob> m_blobGetter;
 
-        public Persister(ReplicaInformation replicaInfo, PersistencyInfo persistencyInfo, ISerializer serializer)
+
+
+
+        public Persister(ReplicaInformation replicaInfo, PersistencyInfo persistencyInfo, ISerializer serializer, Func<string, CloudBlockBlob> blobGetter)
         {
             m_replica = replicaInfo;
             m_pstinfo = persistencyInfo;
             m_serializer = serializer;
+            m_blobGetter = blobGetter;
             ReferenceAmount = 0;
         }
 
@@ -55,8 +68,18 @@ namespace Trinity.ServiceFabric.GarphEngine.Infrastructure.Interfaces
         }
 
 
+
+
+
         public bool DumpToBlobStorageServer(Guid guid, List<byte[]> srcs)
         {
+            CloudBlockBlob blob = m_blobGetter(guid.ToString());
+
+            TransferManager.UploadAsync(
+                new MemoryStream(
+                    srcs.Aggregate(new byte[] { }, (prev, next) => prev.Concat(next).ToArray())), 
+                blob).Wait();
+           
             // TODO: Connect to the remote server again and dump `srcs` to the remote with version `guid`.
             throw new NotImplementedException();
         }
