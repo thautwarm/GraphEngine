@@ -3,7 +3,7 @@
 """
 
 TODO: 
-    TSL generation and sending msg to Graph Machine to compile TSL. 
+    tsl generation and sending msg to Graph Machine to compile tsl. 
 """
 
 from .SymTable import SymTable

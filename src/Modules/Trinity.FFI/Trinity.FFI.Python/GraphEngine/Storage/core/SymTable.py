@@ -127,7 +127,7 @@ def load_symbols(tsl_src_dir, tsl_build_dir=None, module_name=None, version_name
 
     """
     TODO:
-    Create new cell types from TSL source directory.
+    Create new cell types from tsl source directory.
     """
 
 

@@ -1,59 +1,61 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Wed Jan 31 17:54:07 2018
+from ..utils import class_property
+from enum import Enum
+from abc import ABC, abstractmethod, abstractclassmethod
+from typing import Union, TypeVar, Type, Callable
 
-@author: twshe
-"""
-from GraphEngine.Storage.core.SymTable import CellType
+if False:
+    from Cython.Shadow import void
 
-_join = ''.join
+Basic = Union[int, float, str]
+T = TypeVar('T')
 
 
-def to_tsl(obj):
-    if isinstance(obj, str):
-        return obj
+class TSLType(ABC):
+    __tsl_src__: "void*"
 
-    elif isinstance(obj, CellType):
-        return _join((
-            '{}\n'.format(obj.name),
-            '{\n',
-            '{}'.format(
-                '\n'.join(
-                    ['{} {};'.format(attr_type, attr_name)
-                     for attr_name, attr_type in obj.attrs.items()])),
-            '\n}\n'))
+    @abstractclassmethod
+    def __init__(self, *args):
+        """
+        >>> new_cell = Cell()
+        >>> new_cell = Cell(1, [1, 2, 3])
+        init with  ordered parameters or no parameter.
+        """
+        pass
 
-    elif isinstance(obj, dict):
-        return _join((
-            '{}\n'.format(obj['name']),
-            '{\n',
-            '{}'.format(
-                '\n'.join(
-                    ['{} {};'.format(attr_type, attr_name)
-                     for attr_name, attr_type in obj['attrs'].items()])),
-        ))
+    @abstractclassmethod
+    def new(self, **kwargs) -> 'TSLType':
+        """
+        >>> new_cell = Cell.new(attr1=1, attr2=[1, 2, 3])
+        """
+        pass
 
-    elif isinstance(obj, TSL):
-        return obj.codes
-    else:
-        raise TypeError('invalid parameters.\n',
-                        '\texpected: \n',
-                        '\tTSL(str)      | '
-                        '\tTSL(CellType) | '
-                        '\tTSL(dict, name=str)\n')
+    @classmethod
+    def from_pointer(cls: 'Union[Type[T], Callable]', src) -> 'T':
+        """
+        >>> new_cell = Cell.from_pointer(src)
+        """
+        new = cls
+        new.__tsl_src__ = src
+        return new
 
 
 class TSL:
-    def __init__(self, definition):
-        if isinstance(definition, list):
-            self.codes = '\n'.join([to_tsl(cell_def) for cell_def in definition])
+    _type_storage = {}
 
-    def create(self, at='./'):
-        with open(at, 'w') as to_write:
-            to_write.write(self.codes)
+    @class_property
+    def types(cls) -> 'dict':
+        return cls._type_storage
 
-    def __str__(self):
-        return self.codes
+    @classmethod
+    def register_type(cls, sig, typ):
+        cls._type_storage[sig] = typ
 
-    def __repr__(self):
-        return self.__str__()
+    @classmethod
+    def type_map(cls, type_name, src) -> 'Union[T, Basic]':
+        """
+        in Python end, tsl type is also a constructor.
+        """
+        tsl_type: 'Union[TSLType, Type[T], Callable]' = cls._type_storage.get(type_name)
+        if not tsl_type:
+            return src
+        return tsl_type.from_pointer(src)
